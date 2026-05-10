@@ -6,14 +6,14 @@ import { UpdateMachineryDto } from './dto/update-machinery.dto';
 import { QueryMachineryDto } from './dto/query-machinery.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { Machinery } from './entities/machinery.entity';
-import { UploadService } from '../common/upload/upload.service';
+import { S3Service } from '../common/s3/s3.service';
 
 @ApiTags('machineries')
 @Controller('machineries')
 export class MachineriesController {
   constructor(
     private readonly machineriesService: MachineriesService,
-    private readonly uploadService: UploadService,
+    private readonly uploadService: S3Service,
   ) {}
 
   @Post()

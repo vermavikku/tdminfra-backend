@@ -5,14 +5,14 @@ import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { Profile } from './entities/profile.entity';
-import { UploadService } from '../common/upload/upload.service';
+import { S3Service } from '../common/s3/s3.service';
 
 @ApiTags('profiles')
 @Controller('profiles')
 export class ProfilesController {
   constructor(
     private readonly profilesService: ProfilesService,
-    private readonly uploadService: UploadService,
+    private readonly uploadService: S3Service,
   ) {}
 
   @Post()

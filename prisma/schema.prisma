@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MachineryStatus {
+  ACTIVE  @map("active")
+  INACTIVE @map("inactive")
+}
+
+enum EnquiryStatus {
+  PENDING   @map("pending")
+  COMPLETED @map("completed")
+}
+
+
+model Enquiry {
+  id                Int       @id @default(autoincrement())
+  machine_id        Int
+  status            EnquiryStatus @default(PENDING)
+  user_name         String    @db.VarChar(100)
+  user_email        String    @db.VarChar(150)
+  user_phone_number String    @db.VarChar(20)
+  message           String?   @db.Text
+  created_at        DateTime  @default(now()) @db.Timestamptz()
+  updated_at        DateTime  @default(now()) @updatedAt @db.Timestamptz()
+
+  machinery         Machinery @relation(fields: [machine_id], references: [id])
+
+  @@map("enquiries")
+}
+
+model Machinery {
+  id            Int       @id @default(autoincrement())
+  title         String    @db.VarChar(255)
+  description   String?   @db.Text
+  category_code String    @db.VarChar(50)
+  status        MachineryStatus @default(ACTIVE)
+  image_url     String?   @db.VarChar(255)
+  created_at    DateTime  @default(now()) @db.Timestamptz()
+  updated_at    DateTime  @default(now()) @updatedAt @db.Timestamptz()
+
+  enquiries     Enquiry[]
+  category      Category @relation(fields: [category_code], references: [code], name: "CategoryMachineries")
+
+  @@map("machineries")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  username      String    @unique @db.VarChar(100)
+  password      String    @db.VarChar(255) // Store hashed password
+  created_at    DateTime  @default(now()) @db.Timestamptz()
+  updated_at    DateTime  @default(now()) @updatedAt @db.Timestamptz()
+
+  @@map("users")
+}
+
+model Profile {
+  id            Int       @id @default(autoincrement())
+  logo_url      String?   @db.Text
+  phones        String[]  @default([])
+  emails        String[]  @default([])
+  address       String?   @db.Text
+  business_hours Json      @default("{}") @db.JsonB
+  created_at    DateTime  @default(now()) @db.Timestamptz()
+  updated_at    DateTime  @default(now()) @updatedAt @db.Timestamptz()
+
+  @@map("profiles")
+}
+
+model Category {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(100)
+  code         String    @db.VarChar(50) @unique
+  created_at    DateTime  @default(now()) @db.Timestamptz()
+  updated_at    DateTime  @default(now()) @updatedAt @db.Timestamptz()
+
+  machineries   Machinery[] @relation("CategoryMachineries")
+
+  @@map("categories")
+}
